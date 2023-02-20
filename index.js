@@ -1,43 +1,33 @@
 import { createCharacterCard } from "./components/card/card.js";
-
-const cardContainer = document.querySelector('[data-js="card-container"]');
-const searchBarContainer = document.querySelector(
-  '[data-js="search-bar-container"]'
-);
-const searchBar = document.querySelector('[data-js="search-bar"]');
-const navigation = document.querySelector('[data-js="navigation"]');
-const prevButton = document.querySelector('[data-js="button-prev"]');
-const nextButton = document.querySelector('[data-js="button-next"]');
-const pagination = document.querySelector('[data-js="pagination"]');
-
-nextButton.addEventListener("click", handleNextClick);
-prevButton.addEventListener("click", handlePrevClick);
-
-searchBar.addEventListener("submit", handleSubmitSearch);
+import { createNavPagination } from "./components/nav-pagination/nav-pagination.js";
+import { createSearchBar } from "./components/search-bar/search-bar.js";
+import { createNavButton } from "./components/nav-button/nav-button.js";
 
 // States
 let maxPage = 1;
 let page = 1;
 let searchQuery = "";
+let characters = [];
 
 // Constants
 const CHARACTERS_ENDPOINT = "https://rickandmortyapi.com/api/character/";
 
-let characters = [];
+const cardContainer = document.querySelector('[data-js="card-container"]');
 
-// render characters on load
+const searchBarContainer = document.querySelector(
+  '[data-js="search-bar-container"]'
+);
+const searchBar = createSearchBar();
+searchBar.addEventListener("submit", handleSubmitSearch);
+searchBarContainer.append(searchBar);
 
-function renderCharacters() {
-  cardContainer.innerHTML = "";
-  characters.forEach((character) => {
-    const card = createCharacterCard(character);
-    cardContainer.append(card);
-  });
-}
+const navigation = document.querySelector('[data-js="navigation"]');
+const prevButton = createNavButton("previous", handlePrevClick);
+const nextButton = createNavButton("next", handleNextClick);
+const pagination = createNavPagination();
+navigation.append(prevButton, pagination, nextButton);
 
-function renderPagination() {
-  pagination.innerText = `${page} / ${maxPage}`;
-}
+// event handlers
 
 function handleSubmitSearch(event) {
   event.preventDefault();
@@ -58,9 +48,22 @@ function handlePrevClick() {
     fetchCharacters();
   }
 }
-renderCharacters();
 
-// fetch characters
+// UI update functions
+
+function renderCharacters() {
+  cardContainer.innerHTML = "";
+  characters.forEach((character) => {
+    const card = createCharacterCard(character);
+    cardContainer.append(card);
+  });
+}
+
+function renderPagination() {
+  pagination.innerText = `${page} / ${maxPage}`;
+}
+
+// service functions
 
 async function fetchCharacters() {
   try {
@@ -87,4 +90,5 @@ async function fetchCharacters() {
   }
 }
 
+// main
 fetchCharacters();
