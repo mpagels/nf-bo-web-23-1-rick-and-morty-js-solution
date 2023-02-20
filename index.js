@@ -11,7 +11,7 @@ const nextButton = document.querySelector('[data-js="button-next"]');
 const pagination = document.querySelector('[data-js="pagination"]');
 
 // States
-const maxPage = 1;
+let maxPage = 1;
 const page = 1;
 const searchQuery = "";
 
@@ -30,6 +30,10 @@ function renderCharacters() {
   });
 }
 
+function renderPagination() {
+  pagination.innerText = `${page} / ${maxPage}`;
+}
+
 renderCharacters();
 
 // fetch characters
@@ -39,6 +43,7 @@ async function fetchCharacters() {
     const response = await fetch(CHARACTERS_ENDPOINT);
     if (response.ok) {
       const data = await response.json();
+      maxPage = data.info.pages;
       characters = data.results.map((item) => {
         return {
           ...item,
@@ -47,6 +52,7 @@ async function fetchCharacters() {
         };
       });
       renderCharacters();
+      renderPagination();
     } else {
       console.log(`HTTP request failed with error code ${response.status}`);
     }
