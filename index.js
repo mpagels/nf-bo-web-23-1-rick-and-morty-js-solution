@@ -27,7 +27,13 @@ const characters = [
 
 // render characters on load
 
-characters.forEach((character) => {
-  const card = createCharacterCard(character);
-  cardContainer.append(card);
-});
+function renderCharacters() {
+  cardContainer.innerHTML = "";
+  characters.forEach((character) => {
+    const card = createCharacterCard(character);
+    cardContainer.append(card);
+  });
+}
+
+renderCharacters();
+
