@@ -15,19 +15,44 @@ const maxPage = 1;
 const page = 1;
 const searchQuery = "";
 
-const characters = [
-  {
-    name: "Rick Sanchez",
-    status: "Alive",
-    type: "",
-    occurrences: 50,
-    imgSrc: "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-  },
-];
+// Constants
+const CHARACTERS_ENDPOINT = "https://rickandmortyapi.com/api/character/";
+
+let characters = [];
 
 // render characters on load
 
-characters.forEach((character) => {
-  const card = createCharacterCard(character);
-  cardContainer.append(card);
-});
+function renderCharacters() {
+  cardContainer.innerHTML = "";
+  characters.forEach((character) => {
+    const card = createCharacterCard(character);
+    cardContainer.append(card);
+  });
+}
+
+renderCharacters();
+
+// fetch characters
+
+async function fetchCharacters() {
+  try {
+    const response = await fetch(CHARACTERS_ENDPOINT);
+    if (response.ok) {
+      const data = await response.json();
+      characters = data.results.map((item) => {
+        return {
+          ...item,
+          imgSrc: item.image,
+          occurrences: item.episode.length,
+        };
+      });
+      renderCharacters();
+    } else {
+      console.log(`HTTP request failed with error code ${response.status}`);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+fetchCharacters();
